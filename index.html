@@ -18,6 +18,7 @@
             font-family: 'Inter', sans-serif;
             background-color: #8D2C4D; /* Deep rosy brown/pink (#8D2C4D) */
             display: flex;
+            flex-direction: column; /* Use column to stack message and envelope */
             justify-content: center;
             align-items: center;
             min-height: 100vh;
@@ -125,7 +126,6 @@
         .letter-content {
             position: absolute;
             width: 90%;
-            /* Đã loại bỏ 'height: 90%;' để nội dung tự điều chỉnh chiều cao */
             max-height: calc(100% - 40px); /* 100% chiều cao của cha trừ đi padding trên và dưới */
             overflow-y: auto; /* Cho phép cuộn dọc nếu nội dung dài */
             background-color: #F2D5CE; /* Light, warm rosy brown/pink tone for the letter */
@@ -203,12 +203,32 @@
             color: #4B5563; /* text-gray-600 */
             margin-top: 0.5rem; /* Adjusted margin-top to ensure it fits */
         }
+
+        /* Style for the "Tap to Open" message */
+        #tap-to-open-message {
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 20px; /* Space between message and envelope */
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 21; /* Above envelope */
+        }
+
+        #tap-to-open-message.hidden {
+            opacity: 0;
+            pointer-events: none; /* Prevent interaction when hidden */
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-300 to-pink-300">
 
     <!-- Container for background emojis -->
     <div id="background-emojis"></div>
+
+    <!-- Message to prompt user to tap -->
+    <div id="tap-to-open-message">Mời Chị Ấn Vào Bức Thư ạ</div>
 
     <div id="envelope" class="envelope-container" onclick="openEnvelope()">
         <div class="envelope-back"></div>
@@ -226,11 +246,12 @@
         // Lấy các phần tử cần thiết
         const envelope = document.getElementById('envelope');
         const letterContent = document.querySelector('.letter-content');
+        const tapToOpenMessage = document.getElementById('tap-to-open-message'); // Lấy phần tử tin nhắn
 
         // --- CÓ THỂ TÙY CHỈNH LỜI NHẮN TẠY ĐÂY ---
         // Thay thế [Tên của bạn bạn] và [Tên của bạn] bằng tên thật
         const recipientName = "Tên của bạn bạn"; // Ví dụ: "Ngọc Anh"
-        const senderName = "Pảk Bo Gủm";     // ĐÃ THAY ĐỔI: Tên người gửi
+        const senderName = "Pảk Bo Gủm";     // Tên người gửi
 
         // Nội dung bức thư (có thể chỉnh sửa thoải mái)
         const birthdayMessage = `
@@ -249,18 +270,19 @@
             const wasOpen = envelope.classList.contains('open');
             envelope.classList.toggle('open'); // Thêm/bỏ class 'open' để kích hoạt CSS transition
 
-            // Chỉ tạo hiệu ứng khi phong bì được mở (chuyển từ đóng sang mở)
-            if (!wasOpen && envelope.classList.contains('open')) {
+            if (!wasOpen) { // Nếu phong bì đang đóng và sắp mở
+                tapToOpenMessage.classList.add('hidden'); // Ẩn tin nhắn
                 createConfettiEffect();
+            } else { // Nếu phong bì đang mở và sắp đóng
+                tapToOpenMessage.classList.remove('hidden'); // Hiện tin nhắn
             }
         }
 
         // Function to create and append background emojis
         function createBackgroundEmojis() {
             const emojiContainer = document.getElementById('background-emojis');
-            // Đã cập nhật dòng chữ và giảm số lượng biểu tượng
             const emojis = ['🎁', '🎈', '🎉', '🎂', 'Happy Birthday Hong Hae In'];
-            const numberOfEmojis = 125; // Đã giảm số lượng biểu tượng xuống 125
+            const numberOfEmojis = 125; 
 
             for (let i = 0; i < numberOfEmojis; i++) {
                 const emoji = document.createElement('span');
