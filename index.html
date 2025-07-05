@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lời Chúc Từ Trái Tim</title>
+    <!-- Tailwind CSS CDN for easy styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Global styles to ensure full screen coverage for centering */
+        html, body {
+            height: 100%; /* Make html and body take full height of the viewport */
+            width: 100%;  /* Make html and body take full width of the viewport */
+            margin: 0;    /* Remove default browser margin */
+            padding: 0;   /* Remove default browser padding */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #8D2C4D; /* Deep rosy brown/pink (#8D2C4D) */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Prevent scroll during animation */
+            position: relative; /* Needed for background emojis */
+        }
+
+        /* Styles for background emojis */
+        #background-emojis {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allows clicks to pass through */
+            z-index: 5; /* Below envelope (z-index 20) */
+            overflow: hidden; /* Prevent scroll if emojis go slightly out */
+        }
+
+        .background-emoji {
+            position: absolute;
+            animation: fall linear infinite; /* Apply falling animation */
+            white-space: nowrap; /* Prevent text from wrapping */
+            color: rgba(255, 255, 255, 0.8); /* Light color for text */
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        /* Keyframes for falling animation */
+        @keyframes fall {
+            0% {
+                transform: translateY(-100vh); /* Start above the viewport */
+                opacity: 1; /* Start with full opacity */
+            }
+            100% {
+                transform: translateY(100vh); /* Fall below the viewport */
+                opacity: 0; /* Fade out before resetting */
+            }
+        }
+
+        /* Custom styles for the letter and envelope */
+        .envelope-container {
+            position: relative;
+            width: 500px; /* Adjusted Width of the envelope */
+            height: 250px; /* Adjusted Height of the envelope (shorter) */
+            perspective: 1000px; /* For 3D transform effect */
+            cursor: pointer;
+            transition: transform 0.8s ease-in-out;
+            transform-style: preserve-3d; /* Ensure children are in 3D space */
+            
+            /* Visual styling for the outer envelope: Coral color */
+            background-color: #FF7F50; /* Coral color for envelope front */
+            border: 2px solid #FF6347; /* Slightly darker/redder coral for border */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 20; /* Đảm bảo phong bì luôn nằm trên các icon nền */
+        }
+
+        .envelope-container.open {
+            transform: translateY(-50px); /* Lift up slightly when open */
+        }
+
+        .envelope-front, .envelope-back, .envelope-flap, .letter-content {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.8s ease-in-out;
+            transform-origin: top; /* For flap rotation */
+        }
+
+        .envelope-front {
+            width: 100%;
+            height: 100%;
+            background-color: #FF7F50; /* Coral color for envelope front */
+            z-index: 2;
+        }
+
+        .envelope-back {
+            width: 100%;
+            height: 100%;
+            background-color: #FF7F50; /* Coral color for envelope back */
+            z-index: 1;
+        }
+
+        .envelope-flap {
+            width: 100%;
+            height: 125px; /* Adjusted Half the height of the envelope (shorter) */
+            background-color: #FF8C69; /* A slightly different coral shade for the flap */
+            top: 0;
+            left: 0;
+            z-index: 3;
+            transform-origin: top;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            /* Triangle shape for flap */
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            transform: rotateX(0deg); /* Initial state: closed */
+        }
+
+        .envelope-container.open .envelope-flap {
+            transform: rotateX(-180deg); /* Open state: flap rotated */
+            z-index: 0; /* Move flap behind when open */
+        }
+
+        .letter-content {
+            position: absolute;
+            width: 90%;
+            height: 90%;
+            background-color: #F2D5CE; /* Light, warm rosy brown/pink tone for the letter */
+            top: 5%;
+            left: 5%;
+            padding: 20px;
+            box-sizing: border-box;
+            opacity: 0; /* Initially hidden */
+            transform: translateY(50px) scale(0.9); /* Start slightly below and smaller */
+            z-index: 1; /* Behind flap when closed */
+            color: #333;
+            text-align: left;
+            line-height: 1.6;
+            font-size: 0.95em; /* Main content font size */
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .envelope-container.open .letter-content {
+            opacity: 1; /* Fully visible */
+            transform: translateY(0) scale(1); /* Move to original position and size */
+            z-index: 4; /* On top when open */
+            transition-delay: 0.4s; /* Delay appearance until flap opens */
+        }
+
+        /* Styles for confetti pieces (shooting effect) */
+        .confetti-piece {
+            position: fixed; /* Position relative to viewport */
+            font-size: 1.5em; /* Default size */
+            opacity: 0; /* Start invisible */
+            pointer-events: none; /* Don't block clicks */
+            z-index: 25; /* Above envelope */
+            /* Custom properties for animation values */
+            --final-x: 0px;
+            --final-y: 0px;
+        }
+
+        @keyframes shootConfetti {
+            0% {
+                transform: translate(0, 0); /* Start at its initial fixed position */
+                opacity: 0;
+            }
+            20% {
+                opacity: 1; /* Fade in quickly */
+            }
+            100% {
+                transform: translate(var(--final-x), var(--final-y)); /* Move to final relative position */
+                opacity: 0; /* Fade out */
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .envelope-container {
+                width: 90%; /* Make it responsive */
+                height: 180px; /* Adjust height for smaller screens */
+            }
+            .letter-content {
+                font-size: 0.9em; /* Further reduce font size for small screens */
+                padding: 15px;
+            }
+            .confetti-piece {
+                font-size: 1.2em; /* Smaller confetti on small screens */
+            }
+        }
+        
+        /* Typography for the letter content */
+        .message-content-paragraph {
+            margin-bottom: 1rem;
+        }
+        .signature {
+            text-align: right;
+            font-size: 1.25em; /* Adjusted to 1.25em */
+            font-style: italic; /* italic */
+            color: #4B5563; /* text-gray-600 */
+            margin-top: 0.5rem; /* Adjusted margin-top to ensure it fits */
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-300 to-pink-300">
+
+    <!-- Container for background emojis -->
+    <div id="background-emojis"></div>
+
+    <div id="envelope" class="envelope-container" onclick="openEnvelope()">
+        <div class="envelope-back"></div>
+        <div class="letter-content p-6 rounded-lg shadow-inner">
+            <p class="mb-0">Kính gửi Chị Hong Hae In:</p>
+            <p class="mb-4">Mong chị luôn vui vẻ, hạnh phúc và đạt được mọi điều ước. Em thấy chị cũng có mấy cây son rồi ạ nên em sẽ tặng thêm một cây son nữa cho chị Hae In giúp một phần nhỏ vào góc sử dụng và siêu tầm của chị ạ! Hehe</p>
+            
+            <p class="signature">Người gửi,<br>Pảk Bo Gủm</p>
+        </div>
+        <div class="envelope-front"></div>
+        <div class="envelope-flap"></div>
+    </div>
+
+    <script>
+        // Lấy các phần tử cần thiết
+        const envelope = document.getElementById('envelope');
+        const letterContent = document.querySelector('.letter-content');
+
+        // --- CÓ THỂ TÙY CHỈNH LỜI NHẮN TẠY ĐÂY ---
+        // Thay thế [Tên của bạn bạn] và [Tên của bạn] bằng tên thật
+        const recipientName = "Tên của bạn bạn"; // Ví dụ: "Ngọc Anh"
+        const senderName = "Pảk Bo Gủm";     // ĐÃ THAY ĐỔI: Tên người gửi
+
+        // Nội dung bức thư (có thể chỉnh sửa thoải mái)
+        const birthdayMessage = `
+            <p class="mb-0">Kính gửi Chị Hong Hae In:</p>
+            <p class="mb-4">Mong chị luôn vui vẻ, hạnh phúc và đạt được mọi điều ước. Em thấy chị cũng có mấy cây son rồi ạ nên em sẽ tặng thêm một cây son nữa cho chị Hae In giúp một phần nhỏ vào góc sử dụng và siêu tầm của chị ạ! Hehe</p>
+            
+            <p class="signature">Người gửi,<br>${senderName}</p>
+        `;
+        // --- KẾT THÚC PHẦN TÙY CHỈNH ---
+
+        // Gán nội dung bức thư vào thẻ div
+        letterContent.innerHTML = birthdayMessage;
+
+        // Định nghĩa hàm openEnvelope
+        function openEnvelope() {
+            const wasOpen = envelope.classList.contains('open');
+            envelope.classList.toggle('open'); // Thêm/bỏ class 'open' để kích hoạt CSS transition
+
+            // Chỉ tạo hiệu ứng khi phong bì được mở (chuyển từ đóng sang mở)
+            if (!wasOpen && envelope.classList.contains('open')) {
+                createConfettiEffect();
+            }
+        }
+
+        // Function to create and append background emojis
+        function createBackgroundEmojis() {
+            const emojiContainer = document.getElementById('background-emojis');
+            // Đã cập nhật dòng chữ và giảm số lượng biểu tượng
+            const emojis = ['🎁', '🎈', '🎉', '🎂', 'Happy Birthday Hong Hae In'];
+            const numberOfEmojis = 125; // Đã giảm số lượng biểu tượng xuống 125
+
+            for (let i = 0; i < numberOfEmojis; i++) {
+                const emoji = document.createElement('span');
+                emoji.className = 'background-emoji';
+                emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+
+                // Random initial horizontal position
+                emoji.style.left = `${Math.random() * 100}vw`;
+                // Random initial vertical position (start above the screen)
+                emoji.style.top = `${-Math.random() * 100}vh`; 
+
+                // Điều chỉnh kích thước font cho phù hợp với cả emoji và text
+                emoji.style.fontSize = `${Math.random() * 1.5 + 1}em`; // Random size between 1em and 2.5em
+                // Nếu là text, có thể muốn cỡ chữ lớn hơn một chút
+                if (emoji.innerText.length > 2) { // Giả định text sẽ dài hơn 2 ký tự
+                    emoji.style.fontSize = `${Math.random() * 0.8 + 1.8}em`; // Larger font for text
+                }
+                emoji.style.opacity = `${Math.random() * 0.5 + 0.5}`; // Random opacity, starting higher
+                
+                // Random animation duration for varied falling speeds
+                emoji.style.animationDuration = `${Math.random() * 8 + 7}s`; // Duration between 7s and 15s
+
+                emojiContainer.appendChild(emoji);
+            }
+        }
+
+        // Function to create and append confetti effect (new)
+        function createConfettiEffect() {
+            const letterContent = document.querySelector('.letter-content');
+            if (!letterContent) return; // Ensure letterContent exists
+
+            const rect = letterContent.getBoundingClientRect(); // Get position and size of the letter
+
+            const confettiEmojis = ['🎉', '🎊', '✨', '🎈'];
+            const numberOfConfetti = 40; // Number of confetti pieces for the burst
+
+            for (let i = 0; i < numberOfConfetti; i++) {
+                const confetti = document.createElement('span');
+                confetti.className = 'confetti-piece';
+                confetti.innerText = confettiEmojis[Math.floor(Math.random() * confettiEmojis.length)];
+
+                // Randomly choose to start from left or right side of the letter's visible area
+                const startFromLeft = Math.random() > 0.5;
+                let initialLeftPx; // Absolute pixel position for fixed positioning
+                let finalTranslateX; // Relative translation for animation
+
+                if (startFromLeft) {
+                    initialLeftPx = rect.left + (Math.random() * 30); // Start slightly inside left edge
+                    finalTranslateX = (Math.random() * rect.width * 0.4) + 20; // Move right, into the letter
+                } else {
+                    initialLeftPx = rect.right - (Math.random() * 30); // Start slightly inside right edge
+                    finalTranslateX = -(Math.random() * rect.width * 0.4) - 20; // Move left, into the letter
+                }
+
+                // Start confetti anywhere vertically within the letter's height
+                const initialTopPx = rect.top + (Math.random() * rect.height); 
+                // Random vertical movement (up or down) relative to start
+                const finalTranslateY = (Math.random() - 0.5) * rect.height * 0.6; 
+
+                confetti.style.left = `${initialLeftPx}px`;
+                confetti.style.top = `${initialTopPx}px`;
+                confetti.style.fontSize = `${Math.random() * 1 + 1}em`; // Size between 1em and 2em
+                confetti.style.opacity = '0'; // Start invisible, fade in with animation
+
+                const animationDuration = Math.random() * 1.5 + 1.5; // Duration between 1.5s and 3s
+                const animationDelay = Math.random() * 0.2; // Small delay for staggered effect
+
+                // Set CSS variables for keyframe animation
+                confetti.style.setProperty('--final-x', `${finalTranslateX}px`);
+                confetti.style.setProperty('--final-y', `${finalTranslateY}px`);
+                confetti.style.animation = `shootConfetti ${animationDuration}s ease-out ${animationDelay}s forwards`;
+
+                document.body.appendChild(confetti);
+
+                // Remove confetti after animation ends to clean up DOM
+                setTimeout(() => {
+                    confetti.remove();
+                }, (animationDuration + animationDelay) * 1000);
+            }
+        }
+
+        // Call the function when the window loads
+        window.onload = function() {
+            createBackgroundEmojis();
+        };
+    </script>
+</body>
+</html>
