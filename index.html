@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chúc Chị Luôn May Mắn Ạ</title>
-    <!-- Tailwind CSS CDN for easy styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Global styles to ensure full screen coverage for centering */
@@ -224,17 +223,15 @@
 </head>
 <body class="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-300 to-pink-300">
 
-    <!-- Container for background emojis -->
     <div id="background-emojis"></div>
 
-    <!-- Message to prompt user to tap -->
     <div id="tap-to-open-message">🎉Mời Chị Ấn Vào Bức Thư Ạ🎉</div>
 
     <div id="envelope" class="envelope-container" onclick="openEnvelope()">
         <div class="envelope-back"></div>
         <div class="letter-content p-6 rounded-lg shadow-inner">
             <p class="mb-0">Kính gửi Chị Hong Hae In:</p>
-            <p class="mb-4">Mong chị luôn vui vẻ, hạnh phúc và đạt được mọi điều ước. Em thấy chị cũng có mấy cây son rồi ạ nên em sẽ tặng thêm một cây son nữa cho chị Hae In giúp góp một phần nhỏ vào góc sử dụng và siêu tầm của chị ạ! Hehe</p>
+            <p class="mb-4">Mong chị luôn vui vẻ, hạnh phúc và đạt được mọi điều ước. Em có một hộp bánh gửi chị ăn cho đỡ buồn miệng ạ</p>
             
             <p class="signature">Người gửi,<br>Pảk Bo Gủm</p>
         </div>
@@ -254,16 +251,16 @@
         const senderName = "Pảk Bo Gủm";     // Tên người gửi
 
         // Nội dung bức thư (có thể chỉnh sửa thoải mái)
-        const birthdayMessage = `
+        const customMessage = `
             <p class="mb-0">Kính gửi Chị Hong Hae In:</p>
-            <p class="mb-4">Mong chị luôn vui vẻ, hạnh phúc và đạt được mọi điều ước. Em thấy chị cũng có mấy cây son rồi ạ nên em sẽ tặng thêm một cây son nữa cho chị Hae In giúp góp một phần nhỏ vào góc sử dụng và siêu tầm của chị ạ! Hehe</p>
+            <p class="mb-4">Mong chị luôn vui vẻ, hạnh phúc và đạt được mọi điều ước. Em có một hộp bánh gửi chị ăn cho đỡ buồn miệng ạ</p>
             
             <p class="signature">Người gửi,<br>${senderName}</p>
         `;
         // --- KẾT THÚC PHẦN TÙY CHỈNH ---
 
         // Gán nội dung bức thư vào thẻ div
-        letterContent.innerHTML = birthdayMessage;
+        letterContent.innerHTML = customMessage;
 
         // Định nghĩa hàm openEnvelope
         function openEnvelope() {
@@ -281,7 +278,8 @@
         // Function to create and append background emojis
         function createBackgroundEmojis() {
             const emojiContainer = document.getElementById('background-emojis');
-            const emojis = ['🎁', '🎈', '🎉', '🎂', 'Happy Birthday Hong Hae In'];
+            // Đã thay đổi "Happy Birthday Hong Hae In" thành "Have A Good Day Hong Hae In" ở đây
+            const emojis = ['🎁', '🎈', '🎉', '🎂', 'Have A Good Day Hong Hae In']; 
             const numberOfEmojis = 125; 
 
             for (let i = 0; i < numberOfEmojis; i++) {
